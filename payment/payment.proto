@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package payment;
+
+option go_package="./payment";
+
+import "google/protobuf/empty.proto";
+
+message Payment {
+  string giver_id = 1;
+  string receiver_id = 2;
+  int32 amount = 3;
+}
+
+service TransferService {
+  rpc TransferPayments(stream Payment) returns (google.protobuf.Empty);
+}

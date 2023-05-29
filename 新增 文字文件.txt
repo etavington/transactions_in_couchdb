@@ -1,0 +1,30 @@
+	url, err := url.Parse("http://timo:t102260424@localhost:5984")
+	if err != nil {
+		panic(err)
+	}
+	client, err := couchdb.NewClient(url)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+    
+    info, err := client.Info()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(info)
+
+    db1:= client.Use("bank")
+
+   // giverDoc := &CouchDBDoc{ _id: giver_id}
+    receiverDoc := &CouchDBDoc{ _id: receiver_id}
+
+   /* err = db1.Get(giverDoc._id, &giverDoc, nil)
+if err != nil {
+    panic(err)
+} */
+   
+    if err := db1.Get(receiverDoc, receiverDoc._id); err != nil {
+		panic(err)
+	} 
+    fmt.Println(receiverDoc)
+    //fmt.Println(receiverDoc.deposit)
