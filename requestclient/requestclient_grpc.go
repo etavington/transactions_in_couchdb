@@ -27,7 +27,7 @@ func main() {
     
 
     
-    GOCouchDBAPIs.CreateDBs("bank6")
+    //GOCouchDBAPIs.CreateDBs("bank6")
     //GOCouchDBAPIs.CreateDBs("bank7")
     //GOCouchDBAPIs.CreateIndex("bank7")
     //GOCouchDBAPIs.AddAccounts(1,"bank6")
