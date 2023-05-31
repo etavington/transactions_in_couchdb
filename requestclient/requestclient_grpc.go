@@ -7,6 +7,7 @@ import (
 
     "google.golang.org/grpc"
     pb "goclient-and-goserver_bank/payment"
+    "goclient-and-goserver_bank/GOCouchDBAPIs"
 )
 
 func main() {
@@ -23,22 +24,38 @@ func main() {
         log.Fatalf("Failed to call SendPayments: %v", err)
     }
     defer stream.CloseSend()
+    
 
-//    row, err :=
-
-    payment := &pb.Payment{
-        GiverId:    "05525c5942ba5aeabd923ad0e7931b89",
-        ReceiverId: "05525c5942ba5aeabd923ad0e7932338",
-        Amount:     1,
-    }
+    
+    //GOCouchDBAPIs.CreateDBs("bank6")
+    //GOCouchDBAPIs.CreateDBs("bank7")
+    //GOCouchDBAPIs.CreateIndex("bank7")
+    //GOCouchDBAPIs.AddAccounts(1,"bank6")
+    //GOCouchDBAPIs.AddAccounts(1,"bank7")
+    receiverAccounts, err :=GOCouchDBAPIs.AllDocuments("bank6")
+    giverAccounts, err :=GOCouchDBAPIs.AllDocuments("bank7")
+    
     var count int
-
     start := time.Now()
-    for i := 0; i < 3000; i++ {
+    for i := 0; i < 10000; i++ {
+        giverAccount, err :=GOCouchDBAPIs.GetRandomCouchDBAccount(receiverAccounts)
+        if err != nil {
+		  log.Fatal(err)
+	    }
+
+        receiverAccount, err :=GOCouchDBAPIs.GetRandomCouchDBAccount(giverAccounts)
+        if err != nil {
+		   log.Fatal(err)
+	    } 
+       
+        payment := &pb.Payment{
+            GiverId:    giverAccount.Id,
+            ReceiverId: receiverAccount.Id,
+            Amount:     1,
+        }
         if err := stream.Send(payment); err != nil {
             log.Fatalf("Failed to send payment: %v", err)
         }
-        //time.Sleep(time.Second * 1)
         count = i
     }
     end := time.Now()
@@ -50,5 +67,5 @@ func main() {
     log.Println(seconds)
     log.Println(rate)
     log.Println("All payments sent")
-    time.Sleep(time.Second * 20)
+    time.Sleep(time.Second * 20) 
 }

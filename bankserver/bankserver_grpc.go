@@ -22,7 +22,6 @@ type server struct {
 type CouchDBAccount struct {
 	Id      string `json:"_id,omitempty"`
 	Rev     string `json:"_rev,omitempty"` 
-	Name    string `json:"name,omitempty"` 
 	Deposit int32    `json:"deposit,omitempty"`    
 }
 
@@ -39,14 +38,7 @@ func Update(owner CouchDBAccount,newDeposit int32,db *kivik.DB)(){
     return
 }
 
-func TransferCouchDB(giver_id string,receiver_id string,amount int32,db1 *kivik.DB)(){
-    
-    /*client, err := kivik.New("couch", "http://timo:t102260424@localhost:5984")
-    if err != nil {
-        panic(err)
-    }
-    defer client.Close(context.Background()) 
-    db1 := client.DB(context.TODO(), "bank") */  
+func TransferCouchDB(giver_id string,receiver_id string,amount int32,db1 *kivik.DB,db2 *kivik.DB)(){
     
     var giverAccount CouchDBAccount
     var receiverAccount CouchDBAccount
@@ -56,7 +48,7 @@ func TransferCouchDB(giver_id string,receiver_id string,amount int32,db1 *kivik.
         panic(err)
     }
 
-    err = db1.Get(context.Background(), receiver_id).ScanDoc(&receiverAccount)
+    err = db2.Get(context.Background(), receiver_id).ScanDoc(&receiverAccount)
     if err != nil {
         panic(err)
     }
@@ -70,7 +62,7 @@ func TransferCouchDB(giver_id string,receiver_id string,amount int32,db1 *kivik.
     receiverNewdeposit := receiverAccount.Deposit + amount
     
     Update(giverAccount, giverNewdeposit,db1)
-    Update(receiverAccount, receiverNewdeposit,db1)
+    Update(receiverAccount, receiverNewdeposit,db2)
    
     return
 }
@@ -83,18 +75,19 @@ func (s *server) TransferPayments(stream pb.TransferService_TransferPaymentsServ
         panic(err)
     }
     defer client.Close(context.Background()) 
-    db1 := client.DB(context.TODO(), "bank") 
+    db1 := client.DB(context.TODO(), "bank6")
+    db2 := client.DB(context.TODO(), "bank7") 
     for {
         payment, err := stream.Recv()
         if err != nil {
             return err
         }
-        
         giver_id :=payment.GetGiverId()
         receiver_id :=payment.GetReceiverId()
         amount :=payment.GetAmount()
-        TransferCouchDB(giver_id ,receiver_id ,amount,db1)
-    }
+        TransferCouchDB(giver_id ,receiver_id ,amount,db1,db2)
+    }    
+    
 }
 
 func main() {
@@ -108,11 +101,4 @@ func main() {
     if err := s.Serve(lis); err != nil {
         log.Fatalf("failed to serve: %v", err)
     }
-    
-/*    client, err := kivik.New("couch", "http://timo:t102260424@localhost:5984")
-    if err != nil {
-        panic(err)
-    }
-    defer client.Close(context.Background()) 
-    db1 := client.DB(context.TODO(), "bank") */
 }

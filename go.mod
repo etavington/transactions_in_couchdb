@@ -13,6 +13,7 @@ require (
 	github.com/flimzy/diff v0.1.7 // indirect
 	github.com/flimzy/testy v0.1.17 // indirect
 	github.com/go-kivik/kivik/v3 v3.2.4 // indirect
+	github.com/go-kivik/kivik/v4 v4.0.0-20230527200052-5e6df7152b8e // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
