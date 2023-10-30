@@ -29,6 +29,8 @@ github.com/go-kivik/kivik/v3 v3.2.4 h1:PaxFMzeRriBRwBg8MhRuNmnqimSyugRIsm8a8KVZH
 github.com/go-kivik/kivik/v3 v3.2.4/go.mod h1:AOPm24bBxkgCf6iw9Di9EX5ABAVXS+unoKXwgOVETa0=
 github.com/go-kivik/kivik/v4 v4.0.0-20230527200052-5e6df7152b8e h1:PQgW5cykaviMqhgDKYL5Z9xy6n+P0CUOLJZDLKv2lIE=
 github.com/go-kivik/kivik/v4 v4.0.0-20230527200052-5e6df7152b8e/go.mod h1:UNIt4XnxFFNIJi0uJXBV2/BG13MP1F0QLo7x0QvwqbI=
+github.com/go-kivik/kivik/v4 v4.0.0-20230814161004-61a9550f09ed h1:cqQ/Tyq1lRTs+wWSxf2ovOYduV7ZA1jADnE1aK918A0=
+github.com/go-kivik/kivik/v4 v4.0.0-20230814161004-61a9550f09ed/go.mod h1:UNIt4XnxFFNIJi0uJXBV2/BG13MP1F0QLo7x0QvwqbI=
 github.com/go-kivik/kiviktest/v3 v3.0.4 h1:mHX/9gpz5VdSOOOs7sN0/6iLK6jQcLiYbteEd33cKNo=
 github.com/go-kivik/kiviktest/v3 v3.0.4/go.mod h1:sqsz3M2sJxTxAUdOj+2SU21y4phcpYc0FJIn+hbf1D0=
 github.com/golang-jwt/jwt v3.2.2+incompatible/go.mod h1:8pz2t5EyA70fFQQSrl6XZXzqecmYZeUEB8OUGHkxJ+I=

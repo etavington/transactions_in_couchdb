@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -27,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransferServiceClient interface {
-	TransferPayments(ctx context.Context, opts ...grpc.CallOption) (TransferService_TransferPaymentsClient, error)
+	TransferPayments(ctx context.Context, in *Payment, opts ...grpc.CallOption) (*Response, error)
 }
 
 type transferServiceClient struct {
@@ -38,45 +37,20 @@ func NewTransferServiceClient(cc grpc.ClientConnInterface) TransferServiceClient
 	return &transferServiceClient{cc}
 }
 
-func (c *transferServiceClient) TransferPayments(ctx context.Context, opts ...grpc.CallOption) (TransferService_TransferPaymentsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TransferService_ServiceDesc.Streams[0], TransferService_TransferPayments_FullMethodName, opts...)
+func (c *transferServiceClient) TransferPayments(ctx context.Context, in *Payment, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, TransferService_TransferPayments_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &transferServiceTransferPaymentsClient{stream}
-	return x, nil
-}
-
-type TransferService_TransferPaymentsClient interface {
-	Send(*Payment) error
-	CloseAndRecv() (*emptypb.Empty, error)
-	grpc.ClientStream
-}
-
-type transferServiceTransferPaymentsClient struct {
-	grpc.ClientStream
-}
-
-func (x *transferServiceTransferPaymentsClient) Send(m *Payment) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *transferServiceTransferPaymentsClient) CloseAndRecv() (*emptypb.Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(emptypb.Empty)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // TransferServiceServer is the server API for TransferService service.
 // All implementations must embed UnimplementedTransferServiceServer
 // for forward compatibility
 type TransferServiceServer interface {
-	TransferPayments(TransferService_TransferPaymentsServer) error
+	TransferPayments(context.Context, *Payment) (*Response, error)
 	mustEmbedUnimplementedTransferServiceServer()
 }
 
@@ -84,8 +58,8 @@ type TransferServiceServer interface {
 type UnimplementedTransferServiceServer struct {
 }
 
-func (UnimplementedTransferServiceServer) TransferPayments(TransferService_TransferPaymentsServer) error {
-	return status.Errorf(codes.Unimplemented, "method TransferPayments not implemented")
+func (UnimplementedTransferServiceServer) TransferPayments(context.Context, *Payment) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TransferPayments not implemented")
 }
 func (UnimplementedTransferServiceServer) mustEmbedUnimplementedTransferServiceServer() {}
 
@@ -100,30 +74,22 @@ func RegisterTransferServiceServer(s grpc.ServiceRegistrar, srv TransferServiceS
 	s.RegisterService(&TransferService_ServiceDesc, srv)
 }
 
-func _TransferService_TransferPayments_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TransferServiceServer).TransferPayments(&transferServiceTransferPaymentsServer{stream})
-}
-
-type TransferService_TransferPaymentsServer interface {
-	SendAndClose(*emptypb.Empty) error
-	Recv() (*Payment, error)
-	grpc.ServerStream
-}
-
-type transferServiceTransferPaymentsServer struct {
-	grpc.ServerStream
-}
-
-func (x *transferServiceTransferPaymentsServer) SendAndClose(m *emptypb.Empty) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *transferServiceTransferPaymentsServer) Recv() (*Payment, error) {
-	m := new(Payment)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _TransferService_TransferPayments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Payment)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(TransferServiceServer).TransferPayments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TransferService_TransferPayments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransferServiceServer).TransferPayments(ctx, req.(*Payment))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // TransferService_ServiceDesc is the grpc.ServiceDesc for TransferService service.
@@ -132,13 +98,12 @@ func (x *transferServiceTransferPaymentsServer) Recv() (*Payment, error) {
 var TransferService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "payment.TransferService",
 	HandlerType: (*TransferServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "TransferPayments",
-			Handler:       _TransferService_TransferPayments_Handler,
-			ClientStreams: true,
+			MethodName: "TransferPayments",
+			Handler:    _TransferService_TransferPayments_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "payment/payment.proto",
 }

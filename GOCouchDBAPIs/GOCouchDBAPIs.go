@@ -3,7 +3,7 @@ package GOCouchDBAPIs
 import (
 	"github.com/go-kivik/kivik/v3"
     _ "github.com/go-kivik/couchdb/v3"
-	//"github.com/go-kivik/kivik/v4"
+	//"github.com/go-kivik/kivik/v4/driver/couchdb"
 	"context"
 	"math/rand"
 	"fmt"
@@ -73,33 +73,47 @@ func GetRandomCouchDBAccount(accounts[] *CouchDBAccount)(*CouchDBAccount, error)
 	if len(accounts) == 0 {
 		return nil, fmt.Errorf("沒有可用的帳戶")
 	}
+	
 	randomIndex := rand.Intn(len(accounts))
+	//randomIndex := rand.Intn(200)
 	return accounts[randomIndex], nil
 
 } 
 
-/*func CreateIndex(DBname string){
+/*func CreateView(DBname string){
 	client ,err :=kivik.New("couch","http://timo:t102260424@localhost:5984")
 	if err != nil{
 		panic(err)
 	}
 	defer client.Close(context.Background())
 	db := client.DB(context.TODO(), DBname)
-    //創建設計文檔
-	designDoc := couchdb.DesignDoc{
-		ID: "_design/mydesign",
-		Views: map[string]couchdb.ViewDefinition{
-			"byId": {
-				Map: `function(doc) {
-					emit(doc._id, null);
-				}`,
+	// 定義 View 的 Map 函數
+	mapFunction := `
+	function(doc) {
+	   emit(doc._id,{_id:doc._id,deposit:doc.deposit});
+	}
+	`
+
+	// 定義 Design Document 和 View 名稱
+	ddocName := DBname+"design"
+	viewName := DBname+"view"
+
+	// 創建 Design Document，並設定 View 的 Map 函數
+	ddoc := &couchdb.DesignDoc{
+		ID:   "_design/" + ddocName,
+		Views: map[string]interface{}{
+			viewName: map[string]interface{}{
+				"map": mapFunction,
 			},
 		},
 	}
 
-	// 保存設計文檔到數據庫
-	_, err = db.Put(context.Background(), designDoc.ID, designDoc)
+	// 上傳 Design Document
+	_, err = db.Put(context.Background(), ddoc.ID, ddoc)
 	if err != nil {
 		log.Fatal(err)
 	}
-} */
+
+	fmt.Printf("View '%s' in design document '%s' created successfully.\n", viewName, ddocName)
+}*/
+
